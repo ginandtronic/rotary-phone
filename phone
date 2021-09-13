@@ -1,0 +1,61 @@
+#!/usr/bin/python
+import RPi.GPIO as GPIO
+
+
+IO_PIN_DIAL = 18
+IO_PIN_NUMBER = 23
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(IO_PIN_DIAL, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(IO_PIN_NUMBER, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+counter=0
+last = 1
+
+p = vlc.MediaPlayer("/home/pi/Telephone/songtest.mp3")     # add your mp3 file
+ 
+
+
+def count(pin):
+        global counter
+        counter += 1
+
+GPIO.add_event_detect(IO_PIN_DIAL, GPIO.BOTH)
+
+while True:
+        try:
+                if GPIO.event_detected(IO_PIN_DIAL):
+
+                        current = GPIO.input(IO_PIN_DIAL)
+
+                        if(last != current):
+                                if(current == 0):
+                                        GPIO.add_event_detect(IO_PIN_NUMBER, GPIO.BOTH, callback=count, bouncetime=5)
+                                else:
+                                        GPIO.remove_event_detect(IO_PIN_NUMBER)
+                                        number = (counter/2 + 1) % 10
+                                        print number
+                                        counter=0
+                                        
+                                        
+                                        
+                                        if number == 1:
+                                            print ("")
+                                            hello()
+                                            
+                                        elif number == 2:
+                                            p.play()
+
+                                        elif number == 3:
+                                            print ("playing mp3")
+
+                                        elif number == 4:
+                                            print ("playing mp3")
+                                            
+                                        elif number == 5:
+                                            print ("mp3")
+                                        
+                                last = GPIO.input(IO_PIN_DIAL)
+        except KeyboardInterrupt:
+                break
